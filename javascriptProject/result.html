@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Voting Results</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: linear-gradient(-45deg, #fbc2eb, #a6c1ee, #89f7fe, #66a6ff);
+      background-size: 400% 400%;
+      animation: bgAnim 10s ease infinite;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      padding: 40px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes bgAnim {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .results-container {
+      max-width: 700px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px 25px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .result-card {
+      background-color: #ffffff;
+      padding: 18px 22px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      animation: fadeIn 0.6s ease forwards;
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    .language-title {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .progress {
+      height: 14px;
+      background-color: #eaeaea;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background: linear-gradient(135deg, #ff6a00, #ee0979);
+      transition: width 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="results-container">
+    <h2>📊 Voting Results</h2>
+    <div id="resultList"></div>
+  </div>
+
+  <script>
+    const resultList = document.getElementById("resultList");
+    const votes = JSON.parse(localStorage.getItem("votes")) || new Array(10).fill(0);
+    const languages = ["JavaScript", "Python", "Java", "C++", "C#", "Ruby", "Go", "Kotlin", "Swift", "PHP"];
+
+    const totalVotes = votes.reduce((sum, val) => sum + val, 0);
+
+    const voteData = languages.map((lang, index) => ({
+      language: lang,
+      count: votes[index],
+      percentage: totalVotes ? ((votes[index] / totalVotes) * 100).toFixed(1) : 0
+    }));
+
+    // Sort descending by vote count
+    voteData.sort((a, b) => b.count - a.count);
+
+    voteData.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "result-card";
+      card.style.animationDelay = `${index * 100}ms`;
+
+      const title = document.createElement("div");
+      title.className = "language-title";
+      title.innerHTML = `
+        <span>${item.language}</span>
+        <span>${item.count} vote${item.count !== 1 ? 's' : ''} (${item.percentage}%)</span>
+      `;
+
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress";
+      progressBar.innerHTML = `
+        <div class="progress-bar" style="width: ${item.percentage}%;"></div>
+      `;
+
+      card.appendChild(title);
+      card.appendChild(progressBar);
+      resultList.appendChild(card);
+    });
+  </script>
+</body>
+</html>
